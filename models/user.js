@@ -13,6 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(200),
       allowNull: false,
     },
+    // status: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: true
+    // }
+    // salt: {
+    //   type: DataTypes.STRING(200),
+    //   allowNull: false,
+    // }
   }, {
     charset: 'utf8mb4',
     collate: 'utf8mb4_general_ci'
@@ -22,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     db.User.hasMany(db.Post); // 
     db.User.hasMany(db.Comment); //
     // db.User.belongsTo(db.Post, { through: 'Like' }); // 
-    db.User.belongsToMany(db.Post, { through: 'Like' }); // 
+    db.User.belongsToMany(db.Post, { through: 'Like', as: 'Liked' }); // 
     
     db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followers', foreignKey: 'FollowingId' }); //
     db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followings', foreignKey: 'FollowerId' }); //

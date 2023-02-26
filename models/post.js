@@ -4,6 +4,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(200),
       allowNull: true
     },
+    // status: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: true
+    // }
   }, {
     charset: 'utf8mb4', 
     collate: 'utf8mb4_general_ci'
