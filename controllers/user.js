@@ -1,5 +1,7 @@
-const { User } = require('../models');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+
+const { User, Post } = require('../models');
 
 exports.signUpUser = async (req, res, next) => {
   const existingUser = await User.findOne({
@@ -20,23 +22,86 @@ exports.signUpUser = async (req, res, next) => {
       pass: hashedPass,
       salt
     });
-    res.status(201).send('User is registered.');
-  } catch (err) {
-    console.error(err);
-    next(err);
+    return res.status(201).send('User is registered.');
+  } catch (error) {
+    console.error(error);
+    return next(error);
   }
 }
 
-exports.logInUser = async (req, res) => {
-  console.log(req.body);
-  const getUser = User.findOne({
-    where: {
-      email: req.body.email
+exports.logInUser = (req, res, next) => {
+  passport.authenticate('local', (serverError, user, clientError) => {
+    if (serverError) {
+      return next(serverError);
     }
-  })
-  if (!getUser){
-    return res.status(403).send('Please signup first.');
+    if (clientError) { // unauthorized
+      return res.status(401).send(clientError.reason);
+    }
+    return req.login(user, async (loginError) => {
+      if (loginError) {
+        console.error(loginError);
+        return next(loginError);
+      }
+      const fullUser = await User.findOne({
+        where: {
+          id: user.id
+        },
+        attributes: {
+          exclude: ['pass'],
+        },
+        include: [{
+          model: Post,
+          attributes: ['id']
+        }, {
+          model: User,
+          as: 'Followings',
+          attributes: ['id']
+        }, {
+          model: User,
+          as: 'Followers',
+          attributes: ['id']
+        }],
+      })
+      return res.status(200).json(fullUser);
+    })
+
+  })(req, res, next);
+}
+
+exports.loadUser = async (req, res, next) => {
+  if (req.user){
+    const fullUser = await User.findOne({
+      where: {
+        id: req.user.id,
+      },
+      attributes: {
+        exclude: ['pass'],
+      },
+      include: [{
+        model: Post,
+        attributes: ['id']
+      }, {
+        model: User,
+        as: 'Followings',
+        attributes: ['id']
+      }, {
+        model: User,
+        as: 'Followers',
+        attributes: ['id']
+      }],
+    });
+    return res.status(200).json(fullUser);
+  } else {
+    return res.status(200).json(null);
   }
-  console.log(getUser);
-  res.status(200).json(getUser);
+}
+
+exports.logOutUser = (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+    res.redirect('/');
+  });
+  // req.logout();
+  // req.session.destroy();
+  // res.send('ok');
 }
