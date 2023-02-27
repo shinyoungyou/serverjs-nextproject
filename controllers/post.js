@@ -57,7 +57,7 @@ exports.editPost = async (req, res, next) => {
       }
     });
 
-    return res.status(201).send('Post has been updated.');
+    return res.status(201).send({ id: parseInt(req.params.postId), content: req.body.content });
   } catch (error) {
     console.error(error);
     return next(error);
