@@ -1,4 +1,4 @@
-const { User, Post, Comment, Like, Hashtag, Image } = require('../models');
+const { User, Post, Comment, Hashtag, Image } = require('../models');
 
 exports.loadPosts = async (req, res, next) => {
   const allPosts = await Post.findAll({
@@ -6,7 +6,10 @@ exports.loadPosts = async (req, res, next) => {
     //   id: lastId
     // },
     limit: 10,
-    order: [['createdAt', 'DESC']],
+    order: [
+      ['createdAt', 'DESC'],
+      [Comment, 'createdAt', 'DESC'],
+    ],
     include: [{
       model: User,
       attributes: ['id', 'username']
@@ -19,9 +22,10 @@ exports.loadPosts = async (req, res, next) => {
     }, {
       model: User,
       as: 'Likers',
-      attributes: ['id', 'username']
+      attributes: ['id']
     },{
-      model: Image
+      model: Image,
+      attributes: ['id', 'src', 'alt']
     },]
   });
   if (!allPosts){
