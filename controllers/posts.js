@@ -11,6 +11,9 @@ exports.loadPosts = async (req, res, next) => {
       [Comment, 'createdAt', 'DESC'],
     ],
     include: [{
+      model: Image,
+      attributes: ['id', 'src', 'alt', 'PostId']
+    },{
       model: User,
       attributes: ['id', 'username']
     }, {
@@ -24,8 +27,25 @@ exports.loadPosts = async (req, res, next) => {
       as: 'Likers',
       attributes: ['id']
     },{
-      model: Image,
-      attributes: ['id', 'src', 'alt']
+      model: Post,
+      as: 'Retweet',
+      include: [{
+        model: Image,
+        attributes: ['id', 'src', 'alt', 'PostId']
+      },{
+          model: User, // post author
+          attributes: ['id', 'username']
+      },{
+          model: Comment,
+          include: [{
+            model: User, // comment author
+            attributes: ['id', 'username']
+          }]
+      },{
+          model: User, // liker
+          as: 'Likers',
+          attributes: ['id']
+      }]
     },]
   });
   if (!allPosts){
