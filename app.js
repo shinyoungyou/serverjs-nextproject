@@ -5,6 +5,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
+const path = require('path');
 
 const userRouter = require('./routes/user');
 const postRouter = require('./routes/post');
@@ -28,8 +29,9 @@ app.use(cors({
   origin: 'http://localhost:3060',
   credentials: true,
 })); 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // axios로 data보낼 때
+app.use('/', express.static(path.join(__dirname, 'uploads'))); // multipart form data 
+app.use(express.urlencoded({ extended: true })); // 일반 form 일 때에는 url encoded로 받음
 app.use(morgan("dev"));
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
