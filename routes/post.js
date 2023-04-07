@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const { addPost, editPost, removePost, 
+const { addPost, loadPost, editPost, removePost, 
   addComment, editComment, removeComment,
   addLike, removeLike, uploadImage,
   retweet } = require("../controllers/post");
@@ -35,6 +35,7 @@ const upload = multer({
 router.post('/images', isLoggedIn, upload.array('image'), uploadImage);
 
 router.post('/', isLoggedIn, addPost);
+router.get('/:postId', loadPost);
 router.patch('/:postId', isLoggedIn, editPost);
 router.delete('/:postId', isLoggedIn, removePost); 
 
