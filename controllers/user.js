@@ -43,7 +43,8 @@ exports.logIn = (req, res, next) => {
       return next(serverError);
     }
     if (clientError) { // unauthorized
-      return res.status(401).send(clientError.reason);
+      console.log(clientError);
+      return res.status(401).send(clientError.message);
     }
     return req.login(user, async (loginError) => {
       if (loginError) {
@@ -72,7 +73,6 @@ exports.logIn = (req, res, next) => {
       })
       return res.status(200).json(fullUser);
     })
-
   })(req, res, next);
 }
 
@@ -87,11 +87,43 @@ exports.logOut = (req, res, next) => {
 }
 
 exports.loadMyInfo = async (req, res, next) => {
-  if (req.user){
+  console.log(req.headers); // cookie 확인
+  try {
+    if (req.user){
+      const fullUser = await User.findOne({
+        where: {
+          id: req.user.id,
+        },
+        attributes: {
+          exclude: ['pass'],
+        },
+        include: [{
+          model: Post,
+          attributes: ['id']
+        }, {
+          model: User,
+          as: 'Followings',
+          attributes: ['id']
+        }, {
+          model: User,
+          as: 'Followers',
+          attributes: ['id']
+        }],
+      });
+      return res.status(200).json(fullUser);
+    } else {
+      return res.status(200).json(null);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+}
+
+exports.loadUser = async (req, res, next) => {
+  try {
     const fullUser = await User.findOne({
-      where: {
-        id: req.user.id,
-      },
+      where: { id: req.params.userId },
       attributes: {
         exclude: ['pass'],
       },
@@ -108,9 +140,13 @@ exports.loadMyInfo = async (req, res, next) => {
         attributes: ['id']
       }],
     });
+    if (!fullUser){
+      return res.status(404).send('There is no such a user.');
+    }
     return res.status(200).json(fullUser);
-  } else {
-    return res.status(200).json(null);
+  } catch (error) {
+    console.error(error);
+    next(error);
   }
 }
 
