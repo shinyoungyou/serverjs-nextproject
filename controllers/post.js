@@ -29,29 +29,60 @@ exports.addPost = async (req, res, next) => {
     }
 
     const fullPost =  await Post.findOne({
-      where: {
-        id: post.id
-      },
+      where: { id: post.id },
       include: [{
-          model: Image,
-          attributes: ['id', 'src', 'alt', 'PostId']
+        model: Image,
+        attributes: ['id', 'src', 'alt', 'PostId']
       },{
-          model: User, // post author
+        model: User, // post author
+        attributes: ['id', 'username']
+      },{
+        model: Comment,
+        include: [{
+          model: User, // comment author
           attributes: ['id', 'username']
+        }]
       },{
-          model: Comment,
-          include: [{
-            model: User, // comment author
-            attributes: ['id', 'username']
-          }]
-      },{
-          model: User, // liker
-          as: 'Likers',
-          attributes: ['id'] // 일단 이렇게 해서 어떻게 나오는 지 보고, 프론트랑 안 맞다 싶으면 바꾸기
+        model: User, // liker
+        as: 'Likers',
+        attributes: ['id'] // 일단 이렇게 해서 어떻게 나오는 지 보고, 프론트랑 안 맞다 싶으면 바꾸기
       }],
     });
 
     return res.status(201).json(fullPost);
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+}
+
+exports.loadPost = async (req, res, next) => {
+  const fullPost =  await Post.findOne({
+    where: { id: req.params.postId },
+    include: [{
+      model: Image,
+      attributes: ['id', 'src', 'alt', 'PostId']
+    },{
+      model: User, // post author
+      attributes: ['id', 'username']
+    },{
+      model: Comment,
+      include: [{
+        model: User, // comment author
+        attributes: ['id', 'username']
+      }]
+    },{
+      model: User, // liker
+      as: 'Likers',
+      attributes: ['id'] // 일단 이렇게 해서 어떻게 나오는 지 보고, 프론트랑 안 맞다 싶으면 바꾸기
+    }],
+  });
+
+  if (!fullPost){
+    return res.status(404).send('There is no such a post.');
+  }
+  try {
+    return res.status(200).json(fullPost);
   } catch (error) {
     console.error(error);
     return next(error);
@@ -89,6 +120,12 @@ exports.editPost = async (req, res, next) => {
 
 exports.removePost = async (req, res, next) => {
   try {
+    await Post.destroy({
+      where: {
+        RetweetId: req.params.postId,
+      }
+    });
+
     await Post.destroy({
       where: {
         id: req.params.postId,
