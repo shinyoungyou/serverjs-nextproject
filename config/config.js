@@ -10,7 +10,6 @@ const conf = {
     host: "127.0.0.1",
     port: 8889,
     dialect: "mysql",
-    socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
   },
   test: {
     username: "root",
