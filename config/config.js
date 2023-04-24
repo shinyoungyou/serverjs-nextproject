@@ -9,7 +9,8 @@ const conf = {
     database: "next_db",
     host: "127.0.0.1",
     port: 8889,
-    dialect: "mysql"
+    dialect: "mysql",
+    socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
   },
   test: {
     username: "root",
