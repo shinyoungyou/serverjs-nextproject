@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const path = require('path');
+const hpp = require('hpp');
+const helmet = require('helmet');
 
 const userRouter = require('./routes/user');
 const postRouter = require('./routes/post');
@@ -26,13 +28,20 @@ db.sequelize.sync()
 passportConfig();
 
 app.use(cors({
-  origin: 'http://localhost:3060',
+  origin: true,
   credentials: true,
 })); 
 app.use(express.json()); // axios로 data보낼 때
 app.use('/', express.static(path.join(__dirname, 'uploads'))); // multipart form data 
 app.use(express.urlencoded({ extended: true })); // 일반 form 일 때에는 url encoded로 받음
-app.use(morgan("dev"));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined'));
+  app.use(hpp());
+  app.use(helmet({ contentSecurityPolicy: false }));
+} else {
+  app.use(morgan('dev'));
+}
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
