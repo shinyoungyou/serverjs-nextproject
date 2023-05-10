@@ -28,7 +28,7 @@ db.sequelize.sync()
 passportConfig();
 
 app.use(cors({
-  origin: true,
+  origin: ['http://localhost:3060', 'http://shinyongyou.com'],
   credentials: true,
 })); 
 app.use(express.json()); // axios로 data보낼 때
@@ -47,7 +47,12 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
   saveUninitialized: false,
   resave: false,
-  secret: process.env.COOKIE_SECRET
+  secret: process.env.COOKIE_SECRET,
+  secret: {
+    httpOnly: true,
+    secure: false
+  },
+  domain: process.env.NODE_ENV === 'production' && '.shinyoungyou.com'
 }));
 app.use(passport.initialize());
 app.use(passport.session());
