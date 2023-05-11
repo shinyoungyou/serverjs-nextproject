@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(hpp());
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(cors({
-    origin: 'http://shinyongyou.com',
+    origin: 'http://shinyoungyou.com',
     credentials: true,
   })); 
 } else {
