@@ -52,7 +52,7 @@ app.use(session({
   saveUninitialized: false,
   resave: false,
   secret: process.env.COOKIE_SECRET,
-  secret: {
+  cookie: {
     httpOnly: true,
     secure: false
   },
