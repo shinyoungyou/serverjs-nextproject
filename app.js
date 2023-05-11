@@ -27,10 +27,6 @@ db.sequelize.sync()
 
 passportConfig();
 
-app.use(cors({
-  origin: ['http://localhost:3060', 'http://shinyongyou.com'],
-  credentials: true,
-})); 
 app.use(express.json()); // axios로 data보낼 때
 app.use('/', express.static(path.join(__dirname, 'uploads'))); // multipart form data 
 app.use(express.urlencoded({ extended: true })); // 일반 form 일 때에는 url encoded로 받음
