@@ -54,15 +54,15 @@ app.use(session({
   secret: process.env.COOKIE_SECRET,
   cookie: {
     httpOnly: true,
-    secure: false
+    secure: false,
+    domain: process.env.NODE_ENV === 'production' && '.shinyoungyou.com'
   },
-  domain: '.shinyoungyou.com'
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', (req, res) => {
-  res.send(`Express + TypeScript Server NODE_ENV=${process.env.NODE_ENV}`);
+  res.send(`Express + TypeScript Server`);
 });
 
 app.post('/api/post', (req, res) => {
