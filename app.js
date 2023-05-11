@@ -53,7 +53,7 @@ app.use(session({
   resave: false,
   secret: process.env.COOKIE_SECRET,
   cookie: {
-    httpOnly: true,
+    httpOnly: false,
     secure: false
   },
   domain: process.env.NODE_ENV === 'production' && '.shinyoungyou.com'
