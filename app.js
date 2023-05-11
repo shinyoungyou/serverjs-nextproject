@@ -62,7 +62,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', (req, res) => {
-  res.send('Express + TypeScript Server');
+  res.send(`Express + TypeScript Server NODE_ENV=${process.env.NODE_ENV}`);
 });
 
 app.post('/api/post', (req, res) => {
