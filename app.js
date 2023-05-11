@@ -39,8 +39,16 @@ if (process.env.NODE_ENV === 'production') {
   app.use(morgan('combined'));
   app.use(hpp());
   app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(cors({
+    origin: 'http://shinyongyou.com',
+    credentials: true,
+  })); 
 } else {
   app.use(morgan('dev'));
+  app.use(cors({
+    origin: true,
+    credentials: true,
+  })); 
 }
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
