@@ -56,7 +56,7 @@ app.use(session({
     httpOnly: true,
     secure: false
   },
-  domain: process.env.NODE_ENV === 'production' && '.shinyoungyou.com'
+  domain: '.shinyoungyou.com'
 }));
 app.use(passport.initialize());
 app.use(passport.session());
